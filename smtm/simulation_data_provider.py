@@ -1,5 +1,6 @@
 import copy
 import requests
+from .date_converter import DateConverter
 from .data_provider import DataProvider
 
 class SimulationDataProvider(DataProvider):
@@ -26,6 +27,10 @@ class SimulationDataProvider(DataProvider):
     
     query_string["count"] = count
     try:
+      if end is not None:
+        query_string["to"] = DateConverter.from_kst_to_utc_str(end) + "Z"
+      query_string["count"] = count
+      
       response = requests.get(self.URL, params=query_string)
       response.raise_for_status() # 4xx 또는 5xx의 http 상태 코드 수신 시 requests.exceptions.HTTPError 오류 발생시킴
       self.data = response.json()
